@@ -191,6 +191,11 @@ public class AsyncCommand<K, V, T> extends CompletableFuture<T> implements Redis
     }
 
     @Override
+    public boolean isEncodeFailed() {
+        return command.isEncodeFailed();
+    }
+
+    @Override
     public void onComplete(Consumer<? super T> action) {
         thenAccept(action);
     }

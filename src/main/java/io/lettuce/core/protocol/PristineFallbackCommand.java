@@ -87,6 +87,11 @@ class PristineFallbackCommand implements RedisCommand<String, String, List<Strin
     public void setOutput(CommandOutput<String, String, List<String>> output) {
     }
 
+    @Override
+    public boolean isEncodeFailed() {
+        return false;
+    }
+
     static class FallbackOutput extends CommandOutput<String, String, List<String>> {
 
         FallbackOutput() {

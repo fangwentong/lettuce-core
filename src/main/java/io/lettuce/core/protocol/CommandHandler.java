@@ -924,7 +924,7 @@ public class CommandHandler extends ChannelDuplexHandler implements HasQueuedCom
         public void operationComplete(Future<Void> future) {
 
             try {
-                if (future.isSuccess()) {
+                if (future.isSuccess() && !command.isEncodeFailed()) {
                     stack.add(command);
                 }
             } finally {

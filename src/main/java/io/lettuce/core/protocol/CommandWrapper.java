@@ -155,6 +155,11 @@ public class CommandWrapper<K, V, T> implements RedisCommand<K, V, T>, Completea
     }
 
     @Override
+    public boolean isEncodeFailed() {
+        return command.isEncodeFailed();
+    }
+
+    @Override
     public void onComplete(Consumer<? super T> action) {
         addOnComplete(action);
     }

@@ -18,6 +18,7 @@ package io.lettuce.core.protocol;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.AdditionalMatchers.gt;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -489,4 +490,31 @@ class CommandHandlerUnitTests {
         assertThat(internalBuffer.writerIndex()).isEqualTo(0);
         sut.channelUnregistered(context);
     }
+
+    @Test
+    void shouldNotAddToStackOnEncoderException() throws Exception {
+        CommandEncoder encoder = new CommandEncoder();
+        Command<String, String, String> command = spy(this.command);
+        doThrow(new IllegalArgumentException()).when(command).encode(any());
+
+        ChannelPromise promise = new DefaultChannelPromise(channel, ImmediateEventExecutor.INSTANCE);
+
+        ChannelFuture future = mock(ChannelFuture.class);
+        doAnswer(invocation -> {
+            encoder.write(context, invocation.getArgument(0), invocation.getArgument(1));
+            /*
+             * promise will safe success when command encode failed
+             *
+             * SEE ISSUE https://github.com/lettuce-io/lettuce-core/issues/1029
+             */
+            promise.setSuccess();
+            return future;
+        }).when(context).write(refEq(command), refEq(promise));
+
+        sut.write(context, command, promise);
+
+        assertThat(command.isEncodeFailed()).isTrue();
+        assertThat(stack).isEmpty();
+    }
+
 }

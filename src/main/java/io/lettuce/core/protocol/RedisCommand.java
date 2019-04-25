@@ -95,4 +95,11 @@ public interface RedisCommand<K, V, T> {
      * @throws IllegalStateException if the command is cancelled/completed
      */
     void setOutput(CommandOutput<K, V, T> output);
+
+    /**
+     *
+     * @return {@code true} if the command encode failed before write to netty transport
+     */
+    boolean isEncodeFailed();
+
 }

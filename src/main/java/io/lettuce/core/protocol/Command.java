@@ -18,6 +18,7 @@ package io.lettuce.core.protocol;
 import io.lettuce.core.internal.LettuceAssert;
 import io.lettuce.core.output.CommandOutput;
 import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.EncoderException;
 
 /**
  * A Redis command with a {@link ProtocolKeyword command type}, {@link CommandArgs arguments} and an optional
@@ -155,6 +156,11 @@ public class Command<K, V, T> implements RedisCommand<K, V, T> {
             throw new IllegalStateException("Command is completed/cancelled. Cannot set a new output");
         }
         this.output = output;
+    }
+
+    @Override
+    public boolean isEncodeFailed() {
+        return exception instanceof EncoderException;
     }
 
     @Override
